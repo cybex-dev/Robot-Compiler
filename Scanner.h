@@ -9,18 +9,23 @@
 #include "Token.h"
 #include "Expression.h"
 #include "PrimaryExpression.h"
-#include "Identifier.h"
+#include "Identifie_r.h"
 #include "Operate.h"
 
 class Scanner {
 public:
-    Scanner() = default;
-
+    Scanner(std::string sentence);
+    void buildTokenList();
+    std::string& buildNextToken();
+    static TokenType findType(char spelling);
+    std::vector<Token> getTokens();
+    void displayTokens();
     virtual ~Scanner();
 
 private:
-
-
+    std::vector<Token> tokenList;
+    std::string sentence;
+    int curPos;
 };
 
 

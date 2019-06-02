@@ -3,3 +3,5 @@
 //
 
 #include "Operate.h"
+
+Operate::Operate(const std::string &spelling) : Terminal(spelling) {}

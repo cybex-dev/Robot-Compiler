@@ -6,8 +6,13 @@
 #define COMPILER_PRIMARYEXPRESSION_H
 
 
-class PrimaryExpression {
+#include "AST.h"
 
+class PrimaryExpression : AST {
+public:
+    PrimaryExpression();
+
+    virtual ~PrimaryExpression();
 };
 
 

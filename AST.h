@@ -7,7 +7,9 @@
 
 class AST {
 public:
-    virtual void describe() = 0;
+    virtual void describe() {
+
+    }
 };
 
 #endif //COMPILER_AST_H

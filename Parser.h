@@ -11,9 +11,15 @@
 #include <ostream>
 #include "Token.h"
 #include "Scanner.h"
+#include "Identifie_r.h"
 
 class Parser {
+public:
+    explicit Parser(std::string sentence);
+    void evaluate();
+
 private:
+    std::string sentence;
     std::vector<Token> tokenList;
     Token *currentToken;
     uint  curTokenPos;
@@ -22,12 +28,9 @@ private:
     void accept(TokenType type);
     void acceptIt();
     Expression parseExpression();
-    PrimaryExpression parsePrimary();
-    class Identifier parseIdentifier();
+    PrimaryExpression* parsePrimary();
     Operate parseOperator();
-
-public:
-    Parser() = default;
+    Identifie_r parseIdentifier();
 };
 
 

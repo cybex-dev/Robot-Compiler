@@ -9,7 +9,11 @@
 #include "AST.h"
 
 class Terminal: AST {
-    std::string string;
+private:
+    std::string spelling;
+
+public:
+    explicit Terminal(std::string spelling);
 };
 
 

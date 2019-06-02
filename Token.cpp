@@ -1,16 +1,17 @@
+#include <utility>
+
 //
 // Created by cybex on 2019/05/03.
 //
 
+#include <iostream>
 #include "Token.h"
 
-Token::Token(const std::string &value, TokenType type) : value(value), type(type) {
+Token::Token(std::string value, TokenType type) : value(std::move(value)), tokenType(type) {
 
 }
 
-Token::~Token() {
-
-}
+Token::~Token() = default;
 
 const std::string &Token::getValue() const {
     return value;
@@ -21,17 +22,25 @@ void Token::setValue(const std::string &value) {
 }
 
 TokenType Token::getType() const {
-    return type;
+    return tokenType;
 }
 
 void Token::setType(TokenType type) {
-    Token::type = type;
+    Token::tokenType = type;
 }
 
 bool Token::operator==(const Token &rhs) const {
-    return type == rhs.type;
+    return tokenType == rhs.tokenType;
 }
 
 bool Token::operator!=(const Token &rhs) const {
     return !(rhs == *this);
+}
+
+bool Token::matchesType(TokenType type) {
+    return tokenType == type;
+}
+
+void Token::showSpelling() {
+    std::cout << value;
 }

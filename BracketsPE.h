@@ -6,8 +6,14 @@
 #define COMPILER_BRACKETSPE_H
 
 
-class BracketsPE {
+#include "Expression.h"
 
+class BracketsPE : public PrimaryExpression {
+private:
+    Expression expression;
+public:
+    explicit BracketsPE(Expression expression);
+    virtual ~BracketsPE();
 };
 
 

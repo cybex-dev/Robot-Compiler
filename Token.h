@@ -6,6 +6,7 @@
 #define COMPILER_TOKEN_H
 
 #include <string>
+#include <stdio.h>
 
 enum TokenType{
     Identifier = 0,
@@ -18,7 +19,7 @@ class Token {
 
 private:
     std::string value;
-    TokenType  type;
+    TokenType tokenType;
 public:
     Token() = default;
 
@@ -26,7 +27,7 @@ public:
 
     bool operator!=(const Token &rhs) const;
 
-    Token(const std::string &value, TokenType type);
+    Token(std::string value, TokenType type);
 
     virtual ~Token();
 
@@ -37,6 +38,10 @@ public:
     TokenType getType() const;
 
     void setType(TokenType type);
+
+    void showSpelling();
+
+    bool matchesType(TokenType type);
 };
 
 

@@ -6,8 +6,11 @@
 #define COMPILER_OPERATE_H
 
 
-class Operate {
+#include "Terminal.h"
 
+class Operate: Terminal {
+public:
+    Operate(const std::string &spelling);
 };
 
 

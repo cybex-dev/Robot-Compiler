@@ -3,3 +3,9 @@
 //
 
 #include "PrimaryExpression.h"
+
+PrimaryExpression::PrimaryExpression() {}
+
+PrimaryExpression::~PrimaryExpression() {
+
+}
