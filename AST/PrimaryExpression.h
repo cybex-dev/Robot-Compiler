@@ -1,18 +1,14 @@
 //
-// Created by cybex on 2019/05/03.
+// Created by cybex on 2019/06/04.
 //
 
 #ifndef COMPILER_PRIMARYEXPRESSION_H
 #define COMPILER_PRIMARYEXPRESSION_H
 
-
 #include "AST.h"
 
-class PrimaryExpression : AST {
-public:
-    PrimaryExpression();
+class PrimaryExpression: AST {
 
-    virtual ~PrimaryExpression();
 };
 
 

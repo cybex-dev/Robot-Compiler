@@ -5,18 +5,17 @@
 #ifndef COMPILER_PARSER_H
 #define COMPILER_PARSER_H
 
-
-#include <string>
+#include <utility>
+#include <iostream>
 #include <vector>
-#include <ostream>
-#include "Token.h"
 #include "Scanner.h"
-#include "Identifie_r.h"
+#include "AST/PrimaryExpression_Expression.h"
 
 class Parser {
 public:
     explicit Parser(std::string sentence);
-    void evaluate();
+    void checkSyntax();
+    void checkContext();
 
 private:
     std::string sentence;
@@ -27,10 +26,10 @@ private:
     void fetchNextToken();
     void accept(TokenType type);
     void acceptIt();
-    Expression parseExpression();
-    PrimaryExpression* parsePrimary();
-    Operate parseOperator();
-    Identifie_r parseIdentifier();
+//    Expression parseExpression();
+    PrimaryExpression_Expression* parsePrimary();
+//    Operater* parseOperator();
+//    Identifier parseIdentifier();
 };
 
 

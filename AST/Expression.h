@@ -5,16 +5,16 @@
 #ifndef COMPILER_EXPRESSION_H
 #define COMPILER_EXPRESSION_H
 
+
+#include "AST.h"
 #include "PrimaryExpression.h"
 #include "Operate.h"
-#include "AST.h"
 
-class Expression: AST{
+class Expression : AST {
+    PrimaryExpression *P1, *P2;
+    Operate *O;
 public:
-        PrimaryExpression P1, P2;
-        Operate O;
-
-    Expression(const PrimaryExpression &p1, const Operate &o, const PrimaryExpression &p2);
+    Expression(PrimaryExpression *p1, PrimaryExpression *p2, Operate *o);
 };
 
 

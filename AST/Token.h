@@ -9,10 +9,13 @@
 #include <stdio.h>
 
 enum TokenType{
-    Identifier = 0,
-    Operator = 1,
-    LPar = 2,
-    RPar = 3
+    Identifier = 0, //[a-z]
+    Operater = 1,   // +-/*
+    LPar = 2,       // (
+    RPar = 3,       // }
+    DeclVar = 4,    // :
+    DeclConst = 5,  // ~
+    AssignVar = 6   // :=
 };
 
 class Token {

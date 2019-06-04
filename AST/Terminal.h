@@ -5,13 +5,12 @@
 #ifndef COMPILER_TERMINAL_H
 #define COMPILER_TERMINAL_H
 
-#include <string>
 #include "AST.h"
+#include <string>
 
 class Terminal: AST {
-private:
+protected:
     std::string spelling;
-
 public:
     explicit Terminal(std::string spelling);
 };

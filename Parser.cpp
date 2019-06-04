@@ -1,16 +1,8 @@
-#include <utility>
-
-#include <utility>
-
-#include <utility>
-#include <iostream>
+#include "Parser.h"
 
 //
 // Created by cybex on 2019/05/03.
 //
-
-#include "Parser.h"
-#include "IdentifierPE.h"
 
 Parser::Parser(std::string sentence) {
     currentToken = nullptr;
@@ -18,19 +10,30 @@ Parser::Parser(std::string sentence) {
     this->sentence = std::move(sentence);
 }
 
-void Parser::evaluate(){
+/**
+ * Builds the AST defined by Production Rules and performs syntax checks while building the tree
+ */
+void Parser::checkSyntax(){
     Scanner *s = new Scanner(std::move(sentence));
     tokenList = s->getTokens();
     fetchNextToken();
-    Expression p = parseExpression();
+//    Expression p = parseExpression();
 }
 
-Expression Parser::parseExpression() {
-    PrimaryExpression *p1 = parsePrimary();
-    Operate o = parseOperator();
-    PrimaryExpression *p2 = parsePrimary();
-    return Expression(*p1, o, *p2);
+/**
+ * Performs the contextual analysis ensuring correct variable scopes are used.
+ */
+void Parser::checkContext() {
+
 }
+
+
+//Expression Parser::parseExpression() {
+//    PrimaryExpression_Expression *p1 = parsePrimary();
+//    Operater *o = parseOperator();
+//    PrimaryExpression_Expression *p2 = parsePrimary();
+//    return {p1, o, p2};
+//}
 
 void Parser::acceptIt() {
     fetchNextToken();
@@ -46,24 +49,26 @@ void Parser::accept(TokenType type) {
 
 void Parser::fetchNextToken() {
     curTokenPos++;
-    currentToken = (curTokenPos < tokenList.size())
-            ? &tokenList.at(curTokenPos)
-            : currentToken = nullptr;
+    if (curTokenPos < tokenList.size()) {
+        currentToken = &tokenList.at(curTokenPos);
+    } else {
+        currentToken = nullptr;
+    }
 }
 
-PrimaryExpression* Parser::parsePrimary() {
-    PrimaryExpression *pe = nullptr;
+PrimaryExpression_Expression* Parser::parsePrimary() {
+    PrimaryExpression_Expression *pe = nullptr;
     if (currentToken == nullptr) {
         return nullptr;
     }
     switch (currentToken->getType()) {
         case Identifier: {
-            pe = new IdentifierPE(parseIdentifier());
+//            pe = new IdentifierPE(parseIdentifier());
             break;
         }
         case LPar: {
             acceptIt();
-            pe = new BracketsPE(parseExpression());
+//            pe = new BracketsPE(parseExpression());
             accept(RPar);
             break;
         }
@@ -75,14 +80,14 @@ PrimaryExpression* Parser::parsePrimary() {
     return pe;
 }
 
-Identifie_r Parser::parseIdentifier() {
-    auto *i = new Identifie_r(currentToken->getValue());
-    accept(Identifier);
-    return *i;
-}
-
-Operate Parser::parseOperator() {
-    auto *o = new Operate(currentToken->getValue());
-    accept(Operator);
-    return *o;
-}
+//Identifier Parser::parseIdentifier() {
+//    auto *i = new Identifier(currentToken->getValue());
+//    accept(Identifier);
+//    return *i;
+//}
+//
+//Operater* Parser::parseOperator() {
+//    auto *o = new Operater(currentToken->getValue());
+//    accept(Operater);
+//    return o;
+//}
