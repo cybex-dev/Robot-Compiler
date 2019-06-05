@@ -15,7 +15,9 @@ Parser::Parser(std::string sentence) {
  */
 int Parser::checkSyntax() {
     Scanner *s = new Scanner(std::move(sentence));
-    if(_VERBOSITY >= 2) {
+    if(_VERBOSITY < 3) {
+        fprintf(stdout, "Building Token List...\n");
+    } else if (_VERBOSITY >= 3) {
         fprintf(stdout, "Building Token List...");
     }
     int success = s->buildTokenList();
@@ -23,20 +25,29 @@ int Parser::checkSyntax() {
         // Error message handle in buildTokenList
         return success;
     }
-    if(_VERBOSITY >= 2)
+    if(_VERBOSITY < 2) {
         fprintf(stdout, ANSI_COLOR_GREEN "Success\n" ANSI_COLOR_RESET);
+    } else if (_VERBOSITY >= 3) {
+        fprintf(stdout, ANSI_COLOR_GREEN "Token List Built\n" ANSI_COLOR_RESET);
+    }
     tokenList = s->getTokenList();
 
     // Build AST
-    if(_VERBOSITY >= 2)
-        printf("Building AST...");
+    if(_VERBOSITY < 3) {
+        fprintf(stdout, "Building AST...\n");
+    } else if (_VERBOSITY >= 3) {
+        fprintf(stdout, "Building AST...");
+    }
     success = buildAST(tokenList);
     if (success == 1) {
         // Error message handle in buildAST
         return success;
     }
-    if(_VERBOSITY >= 2)
+    if(_VERBOSITY < 2) {
         fprintf(stdout, ANSI_COLOR_GREEN "Success\n" ANSI_COLOR_RESET);
+    } else if (_VERBOSITY >= 3) {
+        fprintf(stdout, ANSI_COLOR_GREEN "AST Built\n" ANSI_COLOR_RESET);
+    }
     return success;
 }
 

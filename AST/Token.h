@@ -56,6 +56,10 @@ public:
     void showSpelling();
 
     bool matchesType(TokenType type);
+
+    std::string tokenDesc();
+
+    static std::string tokenDesc(TokenType type);
 };
 
 

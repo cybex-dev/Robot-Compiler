@@ -39,6 +39,9 @@ int Scanner::buildTokenList() {
 
         // Here, the assumption is the tokentype is valid and sane. We add it to the tokenlist
         tokenList.emplace_back(Token(curToken, tokenType));
+        if (_VERBOSITY >= 2) {
+            fprintf(stdout, ANSI_COLOR_YELLOW "\t + %s\t->\t%s\n" ANSI_COLOR_RESET, curToken.data(), Token::tokenDesc(tokenType).data());
+        }
     }
 
     // All tokens processed here and are sane.
@@ -77,10 +80,6 @@ std::string Scanner::buildNextToken() {
     }
 
     return token;
-}
-
-TokenType Scanner::findType(char spelling) {
-    return findType(std::string(1, spelling));
 }
 
 TokenType Scanner::findType(const std::string &_spelling) {
