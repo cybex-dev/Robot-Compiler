@@ -31,7 +31,9 @@ int Scanner::buildTokenList() {
         // Check for invalid identifiers
         if (tokenType == TokenType::InvalidIdentifier
             || tokenType == TokenType::InvalidToken) {
-            printf(ANSI_COLOR_GREEN "Failed!\nError Parsing Tokens. Check your Syntax" ANSI_COLOR_RESET);
+            if (_VERBOSITY >= 2) {
+                fprintf(stderr, ANSI_COLOR_GREEN "Failed!\nError Parsing Tokens. Check your code for syntax errors." ANSI_COLOR_RESET);
+            }
             return 1;
         }
 
@@ -58,7 +60,11 @@ std::string Scanner::buildNextToken() {
     while (curPos < _sentence.length()) {
         // Peek ahead. See if the next character type matches the current
         std::string readahead = std::string(1, _sentence[curPos]);
-        nextType = findType(readahead);
+
+        if (type == DeclVar && readahead == "=")
+            nextType = type = findType(token + readahead);
+        else
+            nextType = findType(readahead);
 
         // If it does, increment current pos and add to token
         if (type == nextType) {
@@ -113,7 +119,9 @@ TokenType Scanner::findType(const std::string &_spelling) {
                 }
 
                 default: {
-                    printf(ANSI_COLOR_RED "Invalid Token \'%s\'\n" ANSI_COLOR_RESET, spelling.data());
+                    if (_VERBOSITY >= 3) {
+                        fprintf(stderr, ANSI_COLOR_RED "Invalid Token \'%s\'\n" ANSI_COLOR_RESET, spelling.data());
+                    }
                     return TokenType::InvalidToken;
                 }
             }
@@ -129,7 +137,10 @@ TokenType Scanner::findType(const std::string &_spelling) {
             //  myVar, varr, var123,
             //  but not 1var, +varr
             if (!std::regex_match(spelling, std::regex("^[a-zA-Z0-9]{0,}$"))) {
-                printf(ANSI_COLOR_RED "Invalid identifier(s) \'%s\'\n" ANSI_COLOR_RESET, spelling.data());
+                if (_VERBOSITY >= 3) {
+                    fprintf(stderr, ANSI_COLOR_RED "Invalid identifier(s) \'%s\'\n" ANSI_COLOR_RESET, spelling.data());
+
+                }
                 return TokenType::InvalidIdentifier;
             }
 
@@ -156,7 +167,7 @@ TokenType Scanner::findType(const std::string &_spelling) {
     }
 }
 
-std::vector<Token> Scanner::getTokens() {
+std::vector<Token> Scanner::getTokenList() {
     return tokenList;
 }
 

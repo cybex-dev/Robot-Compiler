@@ -13,31 +13,38 @@ Parser::Parser(std::string sentence) {
 /**
  * Builds the AST defined by Production Rules and performs syntax checks while building the tree
  */
-void Parser::checkSyntax() {
+int Parser::checkSyntax() {
     Scanner *s = new Scanner(std::move(sentence));
-    printf("Building Token List...");
+    if(_VERBOSITY >= 2) {
+        fprintf(stdout, "Building Token List...");
+    }
     int success = s->buildTokenList();
     if (success == 1) {
         // Error message handle in buildTokenList
-        return;
+        return success;
     }
-    printf(ANSI_COLOR_GREEN "Success\n" ANSI_COLOR_RESET);
-    tokenList = s->getTokens();
+    if(_VERBOSITY >= 2)
+        fprintf(stdout, ANSI_COLOR_GREEN "Success\n" ANSI_COLOR_RESET);
+    tokenList = s->getTokenList();
 
-    printf("Building AST...");
+    // Build AST
+    if(_VERBOSITY >= 2)
+        printf("Building AST...");
     success = buildAST(tokenList);
     if (success == 1) {
         // Error message handle in buildAST
-        return;
+        return success;
     }
-    printf(ANSI_COLOR_GREEN "Success\n" ANSI_COLOR_RESET);
+    if(_VERBOSITY >= 2)
+        fprintf(stdout, ANSI_COLOR_GREEN "Success\n" ANSI_COLOR_RESET);
+    return success;
 }
 
 /**
  * Performs the contextual analysis ensuring correct variable scopes are used.
  */
-void Parser::checkContext() {
-
+int Parser::checkContext() {
+    return 0;
 }
 
 

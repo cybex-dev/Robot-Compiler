@@ -25,7 +25,7 @@ public:
     std::string toUpper(const std::string& str);
     TokenType findType(const std::string& spelling);
     TokenType findType(char spelling);
-    std::vector<Token> getTokens();
+    std::vector<Token> getTokenList();
     void displayTokens();
     virtual ~Scanner();
 

@@ -18,8 +18,8 @@
 class Parser {
 public:
     explicit Parser(std::string sentence);
-    void checkSyntax();
-    void checkContext();
+    int checkSyntax();
+    int checkContext();
 
 private:
     std::string sentence;

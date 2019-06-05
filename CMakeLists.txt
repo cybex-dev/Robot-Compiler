@@ -8,18 +8,22 @@ set(VERSION_MINOR 0)
 
 # Variables
 # Set true to enable debugging
-set(DEBUG true)
+set(VERBOSITY 2)
 
 # DO NOT TOUCH!
 set(CMAKE_CXX_STANDARD 14)
 
 # Conditional Checks
-if (NOT DEFINED ${DEBUG})
-    set(DEBUG false)
+if (NOT DEFINED VERBOSITY)
+    set(VERBOSITY 2)
 endif ()
 
+# Program Variables
+message("Project Version: " ${VERSION_MAJOR} "." ${VERSION_MINOR})
+message("Verbosity Level: " ${VERBOSITY})
+
 # Preprocesor derivitives
-add_compile_definitions(_DEBUG=${DEBUG})
+add_compile_definitions(_VERBOSITY=${VERBOSITY})
 add_compile_definitions(_VERSION_MAJOR=${VERSION_MAJOR})
 add_compile_definitions(_VERSION_MINOR=${VERSION_MINOR})
 
