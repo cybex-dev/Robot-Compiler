@@ -13,11 +13,24 @@ Parser::Parser(std::string sentence) {
 /**
  * Builds the AST defined by Production Rules and performs syntax checks while building the tree
  */
-void Parser::checkSyntax(){
+void Parser::checkSyntax() {
     Scanner *s = new Scanner(std::move(sentence));
+    printf("Building Token List...");
+    int success = s->buildTokenList();
+    if (success == 1) {
+        // Error message handle in buildTokenList
+        return;
+    }
+    printf(ANSI_COLOR_GREEN "Success\n" ANSI_COLOR_RESET);
     tokenList = s->getTokens();
-    fetchNextToken();
-//    Expression p = parseExpression();
+
+    printf("Building AST...");
+    success = buildAST(tokenList);
+    if (success == 1) {
+        // Error message handle in buildAST
+        return;
+    }
+    printf(ANSI_COLOR_GREEN "Success\n" ANSI_COLOR_RESET);
 }
 
 /**
@@ -49,35 +62,37 @@ void Parser::accept(TokenType type) {
 
 void Parser::fetchNextToken() {
     curTokenPos++;
-    if (curTokenPos < tokenList.size()) {
-        currentToken = &tokenList.at(curTokenPos);
-    } else {
-        currentToken = nullptr;
-    }
+    currentToken = (curTokenPos < tokenList.size())
+                   ? &tokenList.at(curTokenPos)
+                   : nullptr;
 }
+//
+//PrimaryExpression_Expression* Parser::parsePrimary() {
+//    PrimaryExpression_Expression *pe = nullptr;
+//    if (currentToken == nullptr) {
+//        return nullptr;
+//    }
+//    switch (currentToken->getType()) {
+//        case Identifier: {
+////            pe = new IdentifierPE(parseIdentifier());
+//            break;
+//        }
+//        case LPar: {
+//            acceptIt();
+////            pe = new BracketsPE(parseExpression());
+//            accept(RPar);
+//            break;
+//        }
+//        default: {
+//            std::cout << "Syntax error in Parser::parsePrimary";
+//            break;
+//        }
+//    }
+//    return pe;
+//}
 
-PrimaryExpression_Expression* Parser::parsePrimary() {
-    PrimaryExpression_Expression *pe = nullptr;
-    if (currentToken == nullptr) {
-        return nullptr;
-    }
-    switch (currentToken->getType()) {
-        case Identifier: {
-//            pe = new IdentifierPE(parseIdentifier());
-            break;
-        }
-        case LPar: {
-            acceptIt();
-//            pe = new BracketsPE(parseExpression());
-            accept(RPar);
-            break;
-        }
-        default: {
-            std::cout << "Syntax error in Parser::parsePrimary";
-            break;
-        }
-    }
-    return pe;
+int Parser::buildAST(std::vector<Token> vector) {
+    return 0;
 }
 
 //Identifier Parser::parseIdentifier() {
