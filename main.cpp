@@ -24,7 +24,11 @@ int main() {
     while (!std::regex_match(code, regex)) {
         while (code.empty()) {
             std::printf("\n>>> ");
+#ifndef _TESTING
             std::getline(std::cin, code);
+#else
+            code = "let var t: int in t := t + 1";
+#endif
         }
 
         if (_VERBOSITY >= 1)

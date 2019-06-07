@@ -19,6 +19,9 @@ set(DOUBLE, 1)
 set(INT, 1)
 set(LONG, 1)
 
+# Uncomment for testing
+add_compile_definitions("_TESTING")
+
 # DO NOT TOUCH!
 set(CMAKE_CXX_STANDARD 14)
 
