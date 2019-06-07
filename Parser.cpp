@@ -311,7 +311,39 @@ PrimaryExpression *Parser::parsePrimaryExpression() {
 }
 
 TypeDenoter *Parser::parseTypeDenoter() {
-    return new TypeDenoter(currentToken->getValue());
+    std::string type = currentToken->getValue();
+#ifdef INT
+    if(type == "int") {
+        return new TypeDenoter(type);
+    }
+#endif
+#ifdef DOUBLE
+    if(type == "double") {
+        return new TypeDenoter(type);
+    }
+#endif
+#ifdef FLOAT
+    if(type == "float") {
+        return new TypeDenoter(type);
+    }
+#endif
+#ifdef LONG
+    if(type == "long") {
+        return new TypeDenoter(type);
+    }
+#endif
+#ifdef STRING
+    if(type == "String") {
+        return new TypeDenoter(type);
+    }
+#endif
+#ifdef _CHAR
+    if(type == "char") {
+        return new TypeDenoter(type);
+    }
+#endif
+    fprintf(stderr, "FATAL: Unknown data type \'%s\' is not defined!", type.data());
+    exit(1);
 }
 
 VarName *Parser::parseVarName() {
