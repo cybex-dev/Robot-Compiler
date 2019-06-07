@@ -37,6 +37,11 @@ int Scanner::buildTokenList() {
             return 1;
         }
 
+        // Language allows for spaces, but the spaces are not added to the token list as they serve no purpose.
+        if(tokenType == TokenType::SpaceToken){
+            continue;
+        }
+
         // Here, the assumption is the tokentype is valid and sane. We add it to the tokenlist
         tokenList.emplace_back(Token(curToken, tokenType));
         if (_VERBOSITY >= 2) {
