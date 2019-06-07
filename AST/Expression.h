@@ -15,6 +15,9 @@ class Expression : AST {
     Operate *O;
 public:
     Expression(PrimaryExpression *p1, PrimaryExpression *p2, Operate *o);
+    explicit Expression(Expression *expression);
+
+    virtual ~Expression();
 };
 
 

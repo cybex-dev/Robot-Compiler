@@ -52,19 +52,19 @@ std::string Token::tokenDesc(TokenType type) {
         case -1:
             return "InvalidToken";
         case 0:
-            return "Identifier";
+            return "IdentifierToken";
         case 1:
-            return "Operater";
+            return "OperaterToken";
         case 2:
-            return "LPar";
+            return "LParToken";
         case 3:
-            return "RPar";
+            return "RParToken";
         case 4:
-            return "DeclVar";
+            return "DeclVarToken";
         case 5:
-            return "DeclConst";
+            return "DeclConstToken";
         case 6:
-            return "AssignVar";
+            return "AssignVarToken";
         case 10:
             return "IfToken";
         case 11:

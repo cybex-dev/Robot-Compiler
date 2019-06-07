@@ -10,9 +10,10 @@
 #include "PrimaryExpression.h"
 #include "Expression.h"
 
-class PrimaryExpression_Expression : public PrimaryExpression, public Expression  {
+class PrimaryExpression_Expression : public Expression, public PrimaryExpression  {
 public:
     PrimaryExpression_Expression(PrimaryExpression *p1, PrimaryExpression *p2, Operate *o);
+    explicit PrimaryExpression_Expression(Expression *expression);
 };
 
 

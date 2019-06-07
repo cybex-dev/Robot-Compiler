@@ -6,4 +6,10 @@
 
 #include "Program.h"
 
-Program::Program(Command command) : command(std::move(command)) {}
+Program::Program(Command *command): command(command) {
+
+}
+
+Program::~Program() {
+    delete command;
+}

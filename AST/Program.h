@@ -10,10 +10,12 @@
 
 class Program: Command {
 protected:
-    Command command;
+    Command *command = nullptr;
 
 public:
-    Program(Command command);
+    explicit Program(Command *command);
+
+    virtual ~Program();
 };
 
 

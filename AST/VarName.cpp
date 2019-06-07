@@ -7,3 +7,7 @@
 #include "VarName.h"
 
 VarName::VarName(const std::string &spelling) : Identifier(spelling) {}
+
+VarName::VarName(VarName *varName): Identifier(varName->spelling) {
+
+}

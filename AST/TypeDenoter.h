@@ -9,7 +9,8 @@
 
 class TypeDenoter: Identifier {
 public:
-    TypeDenoter(const std::string &spelling);
+    explicit TypeDenoter(const std::string &spelling);
+    TypeDenoter(TypeDenoter &typeDenoter);
 };
 
 

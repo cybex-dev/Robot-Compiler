@@ -10,5 +10,6 @@
 
 #include "CommandAssign.h"
 
-CommandAssign::CommandAssign(VarName varName, Expression expression) : varName(std::move(varName)),
-                                                                                     expression(std::move(expression)) {}
+CommandAssign::CommandAssign(VarName *varName, Expression *expression): Expression(expression), VarName(varName) {
+
+}

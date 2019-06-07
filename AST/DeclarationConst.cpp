@@ -6,6 +6,5 @@
 
 #include "DeclarationConst.h"
 
-DeclarationConst::DeclarationConst(const Identifier &identifier, Expression expression) : identifier(identifier),
-                                                                                                 expression(std::move(
-                                                                                                         expression)) {}
+DeclarationConst::DeclarationConst(VarName *varName, Expression *expression) : VarName(varName),
+                                                                               Expression(expression) {}

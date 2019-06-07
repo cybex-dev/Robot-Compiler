@@ -6,5 +6,14 @@
 
 #include "CommandIf.h"
 
-CommandIf::CommandIf(Expression condition, const Command &trueCommand, const Command &falseCommand) : condition(std::move(
-        condition)), trueCommand(trueCommand), falseCommand(falseCommand) {}
+CommandIf::CommandIf(Expression *condition, Command *trueCommand, Command *falseCommand) : Expression(condition),
+                                                                                           trueCommand(trueCommand),
+                                                                                           falseCommand(falseCommand) {
+
+}
+
+CommandIf::~CommandIf() {
+    delete trueCommand;
+    delete falseCommand;
+
+}

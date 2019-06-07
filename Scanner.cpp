@@ -64,7 +64,7 @@ std::string Scanner::buildNextToken() {
         // Peek ahead. See if the next character type matches the current
         std::string readahead = std::string(1, _sentence[curPos]);
 
-        if (type == DeclVar && readahead == "=")
+        if (type == DeclVarToken && readahead == "=")
             nextType = type = findType(token + readahead);
         else
             nextType = findType(readahead);
@@ -87,34 +87,34 @@ TokenType Scanner::findType(const std::string &_spelling) {
     switch (spelling[0]) {
         // Left bracket
         case '(':
-            return TokenType::LPar;
+            return TokenType::LParToken;
 
             // Right bracket
         case ')':
-            return TokenType::RPar;
+            return TokenType::RParToken;
 
             // Operators
         case '+':
         case '-':
         case '*':
         case '/':
-            return TokenType::Operater;
+            return TokenType::OperaterToken;
 
             // Const Assignment
         case '~':
-            return TokenType::DeclConst;
+            return TokenType::DeclConstToken;
 
             // Declaration of variable or assignment. Depends on 2nd char
         case ':': {
             // Variable Declaration
             if (spelling.length() == 1) {
-                return TokenType::DeclVar;
+                return TokenType::DeclVarToken;
             }
             // Var assignment
             switch (spelling[1]) {
                 // :=
                 case '=': {
-                    return TokenType::AssignVar;
+                    return TokenType::AssignVarToken;
                 }
 
                 default: {
@@ -160,7 +160,7 @@ TokenType Scanner::findType(const std::string &_spelling) {
             } else if (spelling == "CONST") {
                 return TokenType::ConstToken;
             } else {
-                return TokenType::Identifier;
+                return TokenType::IdentifierToken;
             }
         }
     }
@@ -168,12 +168,6 @@ TokenType Scanner::findType(const std::string &_spelling) {
 
 std::vector<Token> Scanner::getTokenList() {
     return tokenList;
-}
-
-void Scanner::displayTokens() {
-    for (auto &i : tokenList) {
-        i.showSpelling();
-    }
 }
 
 std::string Scanner::toUpper(const std::string &str) {

@@ -9,13 +9,15 @@
 #include "Command.h"
 #include "Expression.h"
 
-class CommandIf : Command{
+class CommandIf : public Command, public Expression {
 protected:
-    Expression condition;
-    Command trueCommand, falseCommand;
+    Command *trueCommand = nullptr,
+            *falseCommand = nullptr;
 
 public:
-    CommandIf(Expression condition, const Command &trueCommand, const Command &falseCommand);
+    CommandIf(Expression *condition, Command *trueCommand, Command *falseCommand);
+
+    virtual ~CommandIf();
 };
 
 

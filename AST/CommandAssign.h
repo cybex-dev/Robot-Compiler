@@ -10,13 +10,11 @@
 #include "VarName.h"
 #include "Expression.h"
 
-class CommandAssign: Command {
-protected:
-    VarName varName;
-    Expression expression;
-
+class CommandAssign: public Command, public Expression, public VarName {
 public:
-    CommandAssign(VarName varName, Expression expression);
+    CommandAssign(VarName *varName, Expression *expression);
+
+    virtual ~CommandAssign() = 0;
 };
 
 

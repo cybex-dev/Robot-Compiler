@@ -14,6 +14,16 @@
 #include <vector>
 #include "Scanner.h"
 #include "AST/PrimaryExpression_Expression.h"
+#include "AST/Command.h"
+#include "AST/Program.h"
+#include "AST/Declaration.h"
+#include "AST/TypeDenoter.h"
+#include "AST/VarName.h"
+#include "AST/Program.h"
+#include "AST/Declaration.h"
+#include "AST/TypeDenoter.h"
+#include "AST/VarName.h"
+#include "AST/DeclarationVar.h"
 
 class Parser {
 public:
@@ -27,15 +37,30 @@ private:
     Token *currentToken;
     uint  curTokenPos;
 
-    void fetchNextToken();
-    void accept(TokenType type);
-    void acceptIt();
+    void loadNextToken();
+    void nextToken(TokenType type);
+    int buildAST();
 
-//    Expression parseExpression();
-    PrimaryExpression_Expression* parsePrimary();
-//    Operater* parseOperator();
-//    Identifier parseIdentifier();
-    int buildAST(std::vector<Token> vector);
+public:
+    virtual ~Parser();
+
+    Command* parseCommand();
+
+    Program* parseProgram();
+
+    Expression* parseExpression();
+
+    Declaration* parseDeclaration();
+
+    PrimaryExpression* parsePrimaryExpression();
+
+    TypeDenoter* parseTypeDenoter();
+
+    VarName* parseVarName();
+
+    Token * getNextToken(TokenType type);
+
+    Operate *parseOperator();
 };
 
 

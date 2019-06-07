@@ -9,14 +9,11 @@
 #include "Declaration.h"
 #include "Identifier.h"
 #include "TypeDenoter.h"
+#include "VarName.h"
 
-class DeclarationVar: Declaration {
-protected:
-    Identifier identifier;
-    TypeDenoter typeDenoter;
-
+class DeclarationVar: public Declaration, public VarName, public TypeDenoter {
 public:
-    DeclarationVar(const Identifier &identifier, TypeDenoter typeDenoter);
+    DeclarationVar(VarName *varName, TypeDenoter *typeDenoter);
 };
 
 

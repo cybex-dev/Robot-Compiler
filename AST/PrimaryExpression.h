@@ -7,7 +7,7 @@
 
 #include "AST.h"
 
-class PrimaryExpression: AST {
+class PrimaryExpression: public AST {
 
 };
 

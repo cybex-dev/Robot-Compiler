@@ -6,6 +6,4 @@
 
 #include "DeclarationVar.h"
 
-DeclarationVar::DeclarationVar(const Identifier &identifier, TypeDenoter typeDenoter) : identifier(identifier),
-                                                                                               typeDenoter(std::move(
-                                                                                                       typeDenoter)) {}
+DeclarationVar::DeclarationVar(VarName *varName, TypeDenoter *typeDenoter) : VarName(varName), TypeDenoter(*typeDenoter) {}

@@ -8,7 +8,7 @@
 
 #include "AST.h"
 
-class Command: AST {
+class Command: public AST {
 
 };
 

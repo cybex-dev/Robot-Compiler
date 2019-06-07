@@ -8,14 +8,12 @@
 #include "Declaration.h"
 #include "Identifier.h"
 #include "Expression.h"
+#include "VarName.h"
 
-class DeclarationConst: Declaration {
-protected:
-    Identifier identifier;
-    Expression expression;
+class DeclarationConst: public Declaration, public VarName, public Expression {
 
 public:
-    DeclarationConst(const Identifier &identifier, Expression expression);
+    DeclarationConst(VarName *varName, Expression *expression);
 };
 
 

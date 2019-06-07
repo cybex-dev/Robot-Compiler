@@ -7,9 +7,10 @@
 
 #include "Identifier.h"
 
-class VarName: Identifier {
+class VarName: public Identifier {
 public:
-    VarName(const std::string &spelling);
+    explicit VarName(const std::string &spelling);
+    explicit VarName(VarName *varName);
 };
 
 

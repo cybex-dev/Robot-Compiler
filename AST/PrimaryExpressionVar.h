@@ -9,7 +9,7 @@
 #include "PrimaryExpression.h"
 #include "VarName.h"
 
-class PrimaryExpressionVar: PrimaryExpression, VarName {
+class PrimaryExpressionVar: public PrimaryExpression, public VarName {
 public:
     PrimaryExpressionVar(const std::string &spelling);
 };

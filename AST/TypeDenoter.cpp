@@ -5,3 +5,7 @@
 #include "TypeDenoter.h"
 
 TypeDenoter::TypeDenoter(const std::string &spelling) : Identifier(spelling) {}
+
+TypeDenoter::TypeDenoter(TypeDenoter &typeDenoter): Identifier(typeDenoter.spelling) {
+
+}
