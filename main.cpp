@@ -27,7 +27,7 @@ int main() {
 #ifndef _TESTING
             std::getline(std::cin, code);
 #else
-            code = "let var t: int in z := t + 1";
+            code = "let var t: int in t := t + 1";
 //            code = "if(true*true) then x:=x+1 else z:=z+2";
 #endif
         }

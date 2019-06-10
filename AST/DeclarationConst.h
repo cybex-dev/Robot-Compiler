@@ -14,6 +14,8 @@ class DeclarationConst: public Declaration, public VarName, public Expression {
 
 public:
     DeclarationConst(VarName *varName, Expression *expression);
+
+    std::string describe() override;
 };
 
 

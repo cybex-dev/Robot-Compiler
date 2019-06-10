@@ -18,9 +18,9 @@ Parser::Parser(std::string sentence) {
 /**
  * Builds the AST defined by Production Rules and performs syntax checks while building the tree
  */
-int Parser::checkSyntax() {
+int Parser::compile() {
     Scanner *s = new Scanner(std::move(sentence));
-    if (_VERBOSITY < 2) {
+    if (_VERBOSITY > 2) {
         fprintf(stdout, "Building Token List...\n");
     } else if (_VERBOSITY <= 2) {
         fprintf(stdout, "Building Token List...");
@@ -38,9 +38,9 @@ int Parser::checkSyntax() {
     tokenList = s->getTokenList();
 
     // Build AST
-    if (_VERBOSITY < 3) {
+    if (_VERBOSITY > 2) {
         fprintf(stdout, "Building AST...\n");
-    } else if (_VERBOSITY >= 3) {
+    } else if (_VERBOSITY <= 2) {
         fprintf(stdout, "Building AST...");
     }
 
@@ -57,24 +57,31 @@ int Parser::checkSyntax() {
     return success;
 }
 
-/**
- * Performs the contextual analysis ensuring correct variable scopes are used.
- */
-int Parser::checkContext() {
-    // use vtables with variable definitions. Each level have a variable referend with value true if initialized. Use variables at different levels.
-    // Save depth where variable is declared. Check if current depth is less that variable -> variable out of scope.
-    // Check variable name declared 2 times, show error.
-    // Assign incompatibile types, show appropriate error.
-    // check same variables names between datatypes
-
-}
+///**
+// * Performs the contextual analysis ensuring correct variable scopes are used.
+// */
+//int Parser::checkContext() {
+//    // use vtables with variable definitions. Each level have a variable referend with value true if initialized. Use variables at different levels.
+//    // Save depth where variable is declared. Check if current depth is less that variable -> variable out of scope.
+//    // Check variable name declared 2 times, show error.
+//    // Assign incompatibile types, show appropriate error.
+//    // check same variables names between datatypes
+//
+//    return 0;
+//}
 
 void Parser::nextToken(TokenType type) {
+    // Debug output
+    if (_VERBOSITY >= 3) {
+        fprintf(stdout, ANSI_COLOR_GREEN "\tParsing [%s] \'%s\'\n" ANSI_COLOR_RESET, currentToken->tokenDesc().data(),
+                currentToken->getValue().data());
+    }
+
     if (currentToken->matchesType(type)) {
         loadNextToken();
     } else {
-        fprintf(stdout, ANSI_COLOR_RED "Compilation Error: %s \'%s\' \n" ANSI_COLOR_RESET,
-                Token::tokenDesc(currentToken->getType()).data(), currentToken->getValue().data());
+        fprintf(stdout, ANSI_COLOR_RED "FATAL: Compilation Error: Expected \'%s\' but found \'%s\' \n" ANSI_COLOR_RESET,
+                Token::tokenDesc(type).data(), Token::tokenDesc(currentToken->getType()).data());
         exit(1);
     }
 }
@@ -98,9 +105,13 @@ void Parser::buildAST() {
 }
 
 Command *Parser::parseCommand() {
-
     switch (currentToken->getType()) {
         case LetToken: {
+            // Debug output
+            if (_VERBOSITY >= 3) {
+                fprintf(stdout, ANSI_COLOR_GREEN "\tParsing [%s] \'%s\'\n" ANSI_COLOR_RESET,
+                        currentToken->tokenDesc().data(), currentToken->getValue().data());
+            }
             /*
              * We are expecting 4 tokens
              * 1. LetToken
@@ -112,11 +123,17 @@ Command *Parser::parseCommand() {
             Declaration *declaration = parseDeclaration();
             nextToken(TokenType::InToken);
             Command *command = parseCommand();
+            closeScope(declaration->describe());
 
             // Build Let Command
             return new CommandLet(declaration, command);
         }
         case IfToken: {
+            // Debug output
+            if (_VERBOSITY >= 3) {
+                fprintf(stdout, ANSI_COLOR_GREEN "\tParsing [%s] \'%s\'\n" ANSI_COLOR_RESET,
+                        currentToken->tokenDesc().data(), currentToken->getValue().data());
+            }
             /*
              * We are expecting 6 tokens minimum
              * 1. IfToken
@@ -127,7 +144,7 @@ Command *Parser::parseCommand() {
              * 6 Command
              */
             loadNextToken();
-            Expression *condition = parseExpression();
+            PrimaryExpression *condition = parsePrimaryExpression();
             nextToken(TokenType::ThenToken);
             Command *trueCommand = parseCommand();
             nextToken(TokenType::ElseToken);
@@ -147,6 +164,22 @@ Command *Parser::parseCommand() {
             VarName *varName = parseVarName();
             nextToken(TokenType::AssignVarToken);
             Expression *expression = parseExpression();
+
+            // Check if variable defined
+            int c = var_table.count(varName->describe());
+
+            if (c == 0) {
+                fprintf(stdout, ANSI_COLOR_RED "Undeclared variable: %s in:\n%s\n" ANSI_COLOR_RESET,
+                        varName->describe().data(), expression->describe().data());
+                exit(1);
+            }
+
+            auto mapIterator = var_table.find(varName->describe());
+            if (!mapIterator->second.defined) {
+                fprintf(stdout, ANSI_COLOR_RED "Undefined variable: %s in:\n%s\n" ANSI_COLOR_RESET,
+                        varName->describe().data(), mapIterator->second.type->describe().data());
+                exit(1);
+            }
 
             // Build variable assignment
             return new CommandAssign(varName, expression);
@@ -169,6 +202,11 @@ Expression *Parser::parseExpression() {
 }
 
 Declaration *Parser::parseDeclaration() {
+    // Debug output
+    if (_VERBOSITY >= 3) {
+        fprintf(stdout, ANSI_COLOR_GREEN "\tParsing [%s] \'%s\'\n" ANSI_COLOR_RESET, currentToken->tokenDesc().data(),
+                currentToken->getValue().data());
+    }
     switch (currentToken->getType()) {
         case VarToken: {
             /*
@@ -183,16 +221,16 @@ Declaration *Parser::parseDeclaration() {
             nextToken(TokenType::DeclVarToken);
             TypeDenoter *type = parseTypeDenoter();
 
-            // Create vtable reference
-            vardef_t vardef = {
+            // Create var_table reference
+            auto *vardef = new vardef_t{
                     .name = id,
                     .defined = false,
                     .isConst = false,
                     .type = type
             };
 
-            // Add to vtable
-            vtable.emplace_back(vardef);
+            // Add to var_table
+            openScope(vardef);
 
             // build Variable Declaration
             return new DeclarationVar(id, type);
@@ -211,16 +249,16 @@ Declaration *Parser::parseDeclaration() {
             nextToken(TokenType::DeclConstToken);
             Expression *expression = parseExpression();
 
-            // Create vtable reference
-            vardef_t vardef = {
+            // Create var_table reference
+            vardef_t *vardef = new vardef_t{
                     .name = id,
                     .defined = false,
-                    .isConst = false,
-                    .type = type
+                    .isConst = true,
+                    .type = new TypeDenoter("const")
             };
 
-            // Add to vtable
-            vtable.emplace_back(vardef);
+            // Add to var_table
+            openScope(vardef);
 
             // build Constant Declaration
             return new DeclarationConst(id, expression);
@@ -234,12 +272,20 @@ Declaration *Parser::parseDeclaration() {
 }
 
 PrimaryExpression *Parser::parsePrimaryExpression() {
+    // Debug output
+    if (_VERBOSITY >= 3) {
+        fprintf(stdout, ANSI_COLOR_GREEN "\tParsing [%s] \'%s\'\n" ANSI_COLOR_RESET, currentToken->tokenDesc().data(),
+                currentToken->getValue().data());
+    }
+
     switch (currentToken->getType()) {
         case IdentifierToken: {
             std::string temp = currentToken->getValue();
 
             // Prep next token
             loadNextToken();
+
+
 
             // build Variable Expression
             return new PrimaryExpressionVar(temp);
@@ -308,6 +354,12 @@ TypeDenoter *Parser::parseTypeDenoter() {
         // Prep next token
         loadNextToken();
 
+        // Debug output
+        if (_VERBOSITY >= 3) {
+            fprintf(stdout, ANSI_COLOR_GREEN "\tParsing [Type (%s) ] \'%s\'\n" ANSI_COLOR_RESET,
+                    Token::tokenDesc(TokenType::IdentifierToken).data(), type.data());
+        }
+
         return new TypeDenoter(type);
     }
 
@@ -319,6 +371,12 @@ VarName *Parser::parseVarName() {
     // Store temp value
     std::string temp = currentToken->getValue();
 
+    // Debug output
+    if (_VERBOSITY >= 3) {
+        fprintf(stdout, ANSI_COLOR_GREEN "\tParsing [%s] \'%s\'\n" ANSI_COLOR_RESET,
+                Token::tokenDesc(TokenType::VarToken).data(), temp.data());
+    }
+
     // Prep next token
     loadNextToken();
 
@@ -328,6 +386,12 @@ VarName *Parser::parseVarName() {
 Operate *Parser::parseOperator() {
     // Store temp value
     std::string temp = currentToken->getValue();
+
+    // Debug output
+    if (_VERBOSITY >= 3) {
+        fprintf(stdout, ANSI_COLOR_GREEN "\tParsing [%s] \'%s\'\n" ANSI_COLOR_RESET,
+                Token::tokenDesc(TokenType::OperaterToken).data(), temp.data());
+    }
 
     // Prep next token
     loadNextToken();
@@ -340,10 +404,43 @@ Parser::~Parser() {
     delete program;
 }
 
-void Parser::closeScope(Parser::vardef_t *vardef) {
+void Parser::openScope(vardef_t *vardef) {
+    // First check if var exists, if it does, we have a problem
+    if (checkVarExists(vardef->name->describe())) {
+        fprintf(stdout, ANSI_COLOR_RED "\tVariable [%s] already declared.\n" ANSI_COLOR_RESET,
+                vardef->name->describe().data());
+        exit(1);
+    }
 
+    if (_VERBOSITY >= 3) {
+        fprintf(stdout, ANSI_COLOR_YELLOW "\t{{{ Variable [%s] open scope\n" ANSI_COLOR_RESET,
+                vardef->name->describe().data());
+    }
+
+    // Add to var_table
+    vardef->defined = true;
+    var_table.insert(std::pair<std::string, vardef_t>(vardef->name->describe(), *vardef));
 }
 
-void Parser::openScope(Parser::vardef_t *vardef) {
+void Parser::closeScope(const std::string& varName) {
+    // We check if variable exists, if not, we have a problem
+    if (!checkVarExists(varName)) {
+        fprintf(stdout, ANSI_COLOR_RED "\tUndefined variable [%s].\n" ANSI_COLOR_RESET,
+                varName.data());
+        exit(1);
+    }
 
+    if (_VERBOSITY >= 3) {
+        fprintf(stdout, ANSI_COLOR_YELLOW "\t}}} Variable [%s] close scope\n" ANSI_COLOR_RESET,
+                varName.data());
+    }
+
+    // Remove from var_table
+    var_table.find(varName)->second.defined = false;
+    var_table.erase(varName);
 }
+
+bool Parser::checkVarExists(const std::string& varName) {
+    return (var_table.count(varName) != 0);
+}
+

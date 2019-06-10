@@ -32,20 +32,25 @@ int Scanner::buildTokenList() {
         if (tokenType == TokenType::InvalidIdentifier
             || tokenType == TokenType::InvalidToken) {
             if (_VERBOSITY >= 2) {
-                fprintf(stderr, ANSI_COLOR_GREEN "Failed!\nError Parsing Tokens. Check your code for syntax errors." ANSI_COLOR_RESET);
+                if (tokenType == InvalidIdentifier) {
+                    fprintf(stderr, ANSI_COLOR_RED "Invalid Token \'%s\'\n" ANSI_COLOR_RESET, curToken.data());
+                } else {
+                    fprintf(stderr, ANSI_COLOR_RED "Failed!\nError Parsing Tokens. Check your code for syntax errors." ANSI_COLOR_RESET);
+                }
             }
             return 1;
         }
 
         // Language allows for spaces, but the spaces are not added to the token list as they serve no purpose.
-        if(tokenType == TokenType::SpaceToken){
+        if (tokenType == TokenType::SpaceToken) {
             continue;
         }
 
         // Here, the assumption is the tokentype is valid and sane. We add it to the tokenlist
         tokenList.emplace_back(Token(curToken, tokenType));
         if (_VERBOSITY >= 2) {
-            fprintf(stdout, ANSI_COLOR_YELLOW "\t + %s\t->\t%s\n" ANSI_COLOR_RESET, curToken.data(), Token::tokenDesc(tokenType).data());
+            fprintf(stdout, ANSI_COLOR_YELLOW "\t | %s\t->\t%s\n" ANSI_COLOR_RESET, curToken.data(),
+                    Token::tokenDesc(tokenType).data());
         }
     }
 
@@ -123,9 +128,6 @@ TokenType Scanner::findType(const std::string &_spelling) {
                 }
 
                 default: {
-                    if (_VERBOSITY >= 3) {
-                        fprintf(stderr, ANSI_COLOR_RED "Invalid Token \'%s\'\n" ANSI_COLOR_RESET, spelling.data());
-                    }
                     return TokenType::InvalidToken;
                 }
             }
@@ -141,10 +143,9 @@ TokenType Scanner::findType(const std::string &_spelling) {
             //  myVar, varr, var123,
             //  but not 1var, +varr
             if (!std::regex_match(spelling, std::regex("^[a-zA-Z0-9]{0,}$"))) {
-                if (_VERBOSITY >= 3) {
-                    fprintf(stderr, ANSI_COLOR_RED "Invalid identifier(s) \'%s\'\n" ANSI_COLOR_RESET, spelling.data());
-
-                }
+//                if (_VERBOSITY >= 3) {
+//                    fprintf(stderr, ANSI_COLOR_RED "Invalid identifier(s) \'%s\'\n" ANSI_COLOR_RESET, spelling.data());
+//                }
                 return TokenType::InvalidIdentifier;
             }
 
