@@ -3,3 +3,7 @@
 //
 
 #include "PrimaryExpression.h"
+
+std::string PrimaryExpression::toString() {
+    return AST::toString();
+}

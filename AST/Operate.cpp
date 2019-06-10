@@ -5,3 +5,7 @@
 #include "Operate.h"
 
 Operate::Operate(const std::string &spelling) : Terminal(spelling) {}
+
+std::string Operate::toString() {
+    return Terminal::toString();
+}

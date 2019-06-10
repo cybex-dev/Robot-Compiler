@@ -16,7 +16,7 @@ class Expression : AST {
 public:
     Expression(PrimaryExpression *p1, PrimaryExpression *p2, Operate *o);
     explicit Expression(Expression *expression);
-
+    std::string toString() override;
     virtual ~Expression();
 };
 

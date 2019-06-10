@@ -8,6 +8,8 @@
 #include "AST.h"
 
 class PrimaryExpression: public AST {
+public:
+    std::string toString() override;
 
 };
 

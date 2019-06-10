@@ -3,9 +3,3 @@
 //
 
 #include "Identifier.h"
-
-Identifier::Identifier(const std::string &spelling) : Terminal(spelling) {}
-
-Identifier::~Identifier() {
-
-}

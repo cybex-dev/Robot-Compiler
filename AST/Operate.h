@@ -11,6 +11,7 @@
 class Operate: Terminal {
 public:
     explicit Operate(const std::string &spelling);
+    std::string toString() override;
 };
 
 

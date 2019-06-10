@@ -18,3 +18,7 @@ Expression::~Expression() {
     delete P2;
     delete O;
 }
+
+std::string Expression::toString() {
+    return P1->toString() + O->toString() + P2->toString();
+}

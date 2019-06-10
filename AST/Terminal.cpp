@@ -7,3 +7,7 @@
 #include "Terminal.h"
 
 Terminal::Terminal(std::string spelling) : spelling(std::move(spelling)) {}
+
+std::string Terminal::toString() {
+    return spelling;
+}

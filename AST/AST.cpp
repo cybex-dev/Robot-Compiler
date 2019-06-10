@@ -4,3 +4,6 @@
 #include "AST.h"
 
 
+std::string AST::toString() {
+
+}

@@ -10,9 +10,9 @@
 
 class Identifier : public Terminal{
 public:
-    explicit Identifier(const std::string &spelling);
+    virtual ~Identifier() = 0;
 
-    virtual ~Identifier();
+    std::string toString() override = 0;
 };
 
 
