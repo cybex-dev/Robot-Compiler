@@ -3,3 +3,7 @@
 //
 
 #include "Declaration.h"
+
+std::string Declaration::describe() {
+    return AST::describe();
+}

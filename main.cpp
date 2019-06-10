@@ -28,22 +28,27 @@ int main() {
             std::getline(std::cin, code);
 #else
             code = "let var t: int in t := t + 1";
+//            code = "if(true*true) then x:=x+1 else z:=z+2";
 #endif
         }
 
         if (_VERBOSITY >= 1)
             fprintf(stdout, ANSI_COLOR_BLUE "Compiling, please wait...\n" ANSI_COLOR_RESET);
         p = new Parser(code);
-        int i = p->checkSyntax();
-        int ii = p->checkContext();
+        int i = p->compile();
+//        int ii = p->checkContext();
         code.clear();
-        if (i == ii && i == 0) {
+        if (i == 0) {
             if (_VERBOSITY >= 1)
                 fprintf(stderr, ANSI_COLOR_GREEN "\nSuccess!\n" ANSI_COLOR_RESET);
         } else {
             if (_VERBOSITY >= 1)
                 fprintf(stderr, ANSI_COLOR_RED "\nFailed!\n" ANSI_COLOR_RESET);
         }
+        code.clear();
+#ifdef _TESTING
+        exit(0);
+#endif
     }
 
     return 0;

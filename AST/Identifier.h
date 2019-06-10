@@ -13,6 +13,8 @@ public:
     explicit Identifier(const std::string &spelling);
 
     virtual ~Identifier();
+
+    virtual std::string describe();
 };
 
 

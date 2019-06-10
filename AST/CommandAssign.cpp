@@ -13,3 +13,7 @@
 CommandAssign::CommandAssign(VarName *varName, Expression *expression): Expression(expression), VarName(varName) {
 
 }
+
+std::string CommandAssign::describe() {
+    return Command::describe() + " " + Expression::describe() + " " + VarName::describe();
+}

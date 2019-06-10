@@ -14,8 +14,10 @@ protected:
 
 public:
     explicit Program(Command *command);
-
     virtual ~Program();
+
+private:
+    std::string describe() override;
 };
 
 

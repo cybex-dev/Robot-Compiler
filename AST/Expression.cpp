@@ -18,3 +18,7 @@ Expression::~Expression() {
     delete P2;
     delete O;
 }
+
+std::string Expression::describe() {
+    return P1->describe() + " " + O->describe() + " " + P2->describe();
+}

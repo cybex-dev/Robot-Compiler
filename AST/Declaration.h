@@ -9,7 +9,8 @@
 #include "AST.h"
 
 class Declaration: AST {
-
+public:
+    std::string describe() override;
 };
 
 

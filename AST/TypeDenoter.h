@@ -11,6 +11,7 @@ class TypeDenoter: Identifier {
 public:
     explicit TypeDenoter(const std::string &spelling);
     TypeDenoter(TypeDenoter &typeDenoter);
+    std::string describe() override;
 };
 
 

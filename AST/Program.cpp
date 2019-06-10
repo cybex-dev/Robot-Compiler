@@ -13,3 +13,7 @@ Program::Program(Command *command): command(command) {
 Program::~Program() {
     delete command;
 }
+
+std::string Program::describe() {
+    return Command::describe();
+}

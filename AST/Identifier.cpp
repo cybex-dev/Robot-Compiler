@@ -6,6 +6,8 @@
 
 Identifier::Identifier(const std::string &spelling) : Terminal(spelling) {}
 
-Identifier::~Identifier() {
+Identifier::~Identifier() = default;
 
+std::string Identifier::describe() {
+    return Terminal::describe();
 }

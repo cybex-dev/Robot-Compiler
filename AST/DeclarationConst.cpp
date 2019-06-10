@@ -8,3 +8,7 @@
 
 DeclarationConst::DeclarationConst(VarName *varName, Expression *expression) : VarName(varName),
                                                                                Expression(expression) {}
+
+std::string DeclarationConst::describe() {
+    return VarName::describe();
+}

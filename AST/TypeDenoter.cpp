@@ -9,3 +9,7 @@ TypeDenoter::TypeDenoter(const std::string &spelling) : Identifier(spelling) {}
 TypeDenoter::TypeDenoter(TypeDenoter &typeDenoter): Identifier(typeDenoter.spelling) {
 
 }
+
+std::string TypeDenoter::describe() {
+    return Identifier::describe();
+}

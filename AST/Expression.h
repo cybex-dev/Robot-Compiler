@@ -10,14 +10,14 @@
 #include "PrimaryExpression.h"
 #include "Operate.h"
 
-class Expression : AST {
+class Expression : public AST {
     PrimaryExpression *P1, *P2;
     Operate *O;
 public:
     Expression(PrimaryExpression *p1, PrimaryExpression *p2, Operate *o);
     explicit Expression(Expression *expression);
-
     virtual ~Expression();
+    std::string describe() override;
 };
 
 

@@ -3,3 +3,7 @@
 //
 
 #include "PrimaryExpression.h"
+
+std::string PrimaryExpression::describe() {
+    return AST::describe();
+}

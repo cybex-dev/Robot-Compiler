@@ -5,11 +5,11 @@
 #ifndef COMPILER_AST_H
 #define COMPILER_AST_H
 
+#include <string>
+
 class AST {
 public:
-    virtual void describe() {
-
-    }
+    virtual std::string describe();
 };
 
 #endif //COMPILER_AST_H

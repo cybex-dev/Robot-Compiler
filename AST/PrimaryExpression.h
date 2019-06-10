@@ -8,7 +8,8 @@
 #include "AST.h"
 
 class PrimaryExpression: public AST {
-
+public:
+    std::string describe() override;
 };
 
 

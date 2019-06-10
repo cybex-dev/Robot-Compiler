@@ -39,15 +39,15 @@ private:
     uint curTokenPos;
     Token *currentToken  = nullptr;
     Program *program = nullptr;
-    std::vector<vardef_t> vtable;
+    std::map<std::string, vardef_t> var_table;
 
     void loadNextToken();
     void nextToken(TokenType type);
 
 public:
     explicit Parser(std::string sentence);
-    int checkSyntax();
-    int checkContext();
+    int compile();
+//    int checkContext();
     virtual ~Parser();
 
     void buildAST();
@@ -61,7 +61,8 @@ public:
     Operate *parseOperator();
 
     void openScope(vardef_t *vardef);
-    void closeScope(vardef_t *vardef);
+    void closeScope(const std::string& varName);
+    bool checkVarExists(const std::string& varName);
 };
 
 
