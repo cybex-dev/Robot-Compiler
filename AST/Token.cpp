@@ -79,8 +79,6 @@ std::string Token::tokenDesc(TokenType type) {
             return "ConstToken";
         case 16:
             return "VarToken";
-        case 17:
-            return "SpaceToken";
     }
 
     return "";

@@ -26,41 +26,42 @@
 #include "AST/DeclarationVar.h"
 
 class Parser {
+private:
+    typedef struct {
+        VarName *name;
+        bool defined;
+        bool isConst;
+        TypeDenoter *type;
+    } vardef_t;
+
+    std::string sentence;
+    std::vector<Token> tokenList;
+    uint curTokenPos;
+    Token *currentToken  = nullptr;
+    Program *program = nullptr;
+    std::vector<vardef_t> vtable;
+
+    void loadNextToken();
+    void nextToken(TokenType type);
+
 public:
     explicit Parser(std::string sentence);
     int checkSyntax();
     int checkContext();
-
-private:
-    std::string sentence;
-    std::vector<Token> tokenList;
-    Token *currentToken;
-    uint  curTokenPos;
-
-    void loadNextToken();
-    void nextToken(TokenType type);
-    int buildAST();
-
-public:
     virtual ~Parser();
 
+    void buildAST();
     Command* parseCommand();
-
-    Program* parseProgram();
-
     Expression* parseExpression();
-
     Declaration* parseDeclaration();
-
     PrimaryExpression* parsePrimaryExpression();
-
     TypeDenoter* parseTypeDenoter();
-
     VarName* parseVarName();
-
     Token * getNextToken(TokenType type);
-
     Operate *parseOperator();
+
+    void openScope(vardef_t *vardef);
+    void closeScope(vardef_t *vardef);
 };
 
 

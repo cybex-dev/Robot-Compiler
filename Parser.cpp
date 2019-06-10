@@ -43,11 +43,8 @@ int Parser::checkSyntax() {
     } else if (_VERBOSITY >= 3) {
         fprintf(stdout, "Building AST...");
     }
-    success = buildAST();
-    if (success == 1) {
-        // Error message handle in buildAST
-        return success;
-    }
+
+    buildAST();
     if (_VERBOSITY < 2) {
         fprintf(stdout, ANSI_COLOR_GREEN "Success\n" ANSI_COLOR_RESET);
     } else if (_VERBOSITY >= 3) {
@@ -64,16 +61,13 @@ int Parser::checkSyntax() {
  * Performs the contextual analysis ensuring correct variable scopes are used.
  */
 int Parser::checkContext() {
-    return 0;
+    // use vtables with variable definitions. Each level have a variable referend with value true if initialized. Use variables at different levels.
+    // Save depth where variable is declared. Check if current depth is less that variable -> variable out of scope.
+    // Check variable name declared 2 times, show error.
+    // Assign incompatibile types, show appropriate error.
+    // check same variables names between datatypes
+
 }
-
-
-//Expression Parser::parseExpression() {
-//    PrimaryExpression_Expression *p1 = parsePrimary();
-//    OperaterToken *o = parseOperator();
-//    PrimaryExpression_Expression *p2 = parsePrimary();
-//    return {p1, o, p2};
-//}
 
 void Parser::nextToken(TokenType type) {
     if (currentToken->matchesType(type)) {
@@ -97,53 +91,14 @@ void Parser::loadNextToken() {
                    : nullptr;
 }
 
-int Parser::buildAST() {
+void Parser::buildAST() {
+    // Prep next token
     loadNextToken();
-    // Here we define how any statement can start off in the language.
-    // After this, the token type and the corresponding class takes care of the rest.
-    while (curTokenPos < tokenList.size()) {
-        switch (currentToken->getType()) {
-            case IfToken: {
-                parseCommand();
-                break;
-            }
-            case LetToken: {
-                // Run parseVarName
-                parseCommand();
-                break;
-            }
-            case VarToken: {
-                // Run parseVarName
-                parseDeclaration();
-                break;
-            }
-            case ConstToken: {
-                // Run parseVarName
-                parseDeclaration();
-                break;
-            }
-            case SpaceToken: {
-                // Skip to next token - we allow spaces
-                loadNextToken();
-                break;
-            }
-
-            default: {
-                fprintf(stdout, ANSI_COLOR_RED "Invalid %s \'%s\' \n" ANSI_COLOR_RESET,
-                        Token::tokenDesc(currentToken->getType()).data(), currentToken->getValue().data());
-                return 1;
-            }
-
-        }
-    }
-}
-
-Program *Parser::parseProgram() {
-    Command *c = parseCommand();
-    return new Program(c);
+    program = new Program(parseCommand());
 }
 
 Command *Parser::parseCommand() {
+
     switch (currentToken->getType()) {
         case LetToken: {
             /*
@@ -153,13 +108,10 @@ Command *Parser::parseCommand() {
              * 3. InToken
              * 4. Command
              */
-            // We already have LetToken, proceed to next.
+            loadNextToken();
             Declaration *declaration = parseDeclaration();
             nextToken(TokenType::InToken);
             Command *command = parseCommand();
-
-            // Prep next token
-            loadNextToken();
 
             // Build Let Command
             return new CommandLet(declaration, command);
@@ -174,15 +126,12 @@ Command *Parser::parseCommand() {
              * 5. ElseToken
              * 6 Command
              */
-            // We already have the IfToken, proceed to next
+            loadNextToken();
             Expression *condition = parseExpression();
             nextToken(TokenType::ThenToken);
             Command *trueCommand = parseCommand();
             nextToken(TokenType::ElseToken);
             Command *falseCommand = parseCommand();
-
-            // Prep next token
-            loadNextToken();
 
             // Build If Command
             return new CommandIf(condition, trueCommand, falseCommand);
@@ -193,13 +142,11 @@ Command *Parser::parseCommand() {
              * 1. VarName
              * 2. AssignVarToken
              * 3. Expression
+             * 3. Expression
              */
             VarName *varName = parseVarName();
             nextToken(TokenType::AssignVarToken);
             Expression *expression = parseExpression();
-
-            // Prep next token
-            loadNextToken();
 
             // Build variable assignment
             return new CommandAssign(varName, expression);
@@ -217,9 +164,6 @@ Expression *Parser::parseExpression() {
     Operate *o1 = parseOperator();
     PrimaryExpression *p2 = parsePrimaryExpression();
 
-    // Prep next token
-    loadNextToken();
-
     // Build Expression
     return new Expression(p1, p2, o1);
 }
@@ -234,13 +178,21 @@ Declaration *Parser::parseDeclaration() {
              * 3. DeclVarToken
              * 4. IdentifierToken -> Type Denoter
              */
-            // We already have the VarToken, proceed to next
+            loadNextToken();
             VarName *id = parseVarName();
             nextToken(TokenType::DeclVarToken);
             TypeDenoter *type = parseTypeDenoter();
 
-            // Prep next token
-            loadNextToken();
+            // Create vtable reference
+            vardef_t vardef = {
+                    .name = id,
+                    .defined = false,
+                    .isConst = false,
+                    .type = type
+            };
+
+            // Add to vtable
+            vtable.emplace_back(vardef);
 
             // build Variable Declaration
             return new DeclarationVar(id, type);
@@ -253,13 +205,22 @@ Declaration *Parser::parseDeclaration() {
              * 3. DeclConstToken
              * 4. Expression
              */
+            loadNextToken();
             nextToken(TokenType::ConstToken);
             VarName *id = parseVarName();
             nextToken(TokenType::DeclConstToken);
             Expression *expression = parseExpression();
 
-            // Prep next token
-            loadNextToken();
+            // Create vtable reference
+            vardef_t vardef = {
+                    .name = id,
+                    .defined = false,
+                    .isConst = false,
+                    .type = type
+            };
+
+            // Add to vtable
+            vtable.emplace_back(vardef);
 
             // build Constant Declaration
             return new DeclarationConst(id, expression);
@@ -291,12 +252,9 @@ PrimaryExpression *Parser::parsePrimaryExpression() {
              * 2. Expression
              * 3. Right Token
              */
-            // Current token already read, proceed to expression
+            loadNextToken();
             Expression *e = parseExpression();
             nextToken(TokenType::RParToken);
-
-            // Prep next token
-            loadNextToken();
 
             // build Primary Expression container
             return new PrimaryExpression_Expression(e);
@@ -312,48 +270,80 @@ PrimaryExpression *Parser::parsePrimaryExpression() {
 
 TypeDenoter *Parser::parseTypeDenoter() {
     std::string type = currentToken->getValue();
-#ifdef INT
-    if(type == "int") {
-        return new TypeDenoter(type);
+
+    bool verified = false;
+
+#ifdef _INT
+    if (type == "int") {
+        verified = true;
     }
 #endif
-#ifdef DOUBLE
-    if(type == "double") {
-        return new TypeDenoter(type);
+#ifdef _DOUBLE
+    if (type == "double") {
+        verified = true;
     }
 #endif
-#ifdef FLOAT
-    if(type == "float") {
-        return new TypeDenoter(type);
+#ifdef _FLOAT
+    if (type == "float") {
+        verified = true;
     }
 #endif
-#ifdef LONG
-    if(type == "long") {
-        return new TypeDenoter(type);
+#ifdef _LONG
+    if (type == "long") {
+        verified = true;
     }
 #endif
-#ifdef STRING
-    if(type == "String") {
-        return new TypeDenoter(type);
+#ifdef _STRING
+    if (type == "String") {
+        verified = true;
     }
 #endif
 #ifdef _CHAR
-    if(type == "char") {
-        return new TypeDenoter(type);
+    if (type == "char") {
+        verified = true;
     }
 #endif
+
+    if (verified) {
+        // Prep next token
+        loadNextToken();
+
+        return new TypeDenoter(type);
+    }
+
     fprintf(stderr, "FATAL: Unknown data type \'%s\' is not defined!", type.data());
     exit(1);
 }
 
 VarName *Parser::parseVarName() {
-    return new VarName(currentToken->getValue());
+    // Store temp value
+    std::string temp = currentToken->getValue();
+
+    // Prep next token
+    loadNextToken();
+
+    return new VarName(temp);
 }
 
 Operate *Parser::parseOperator() {
-    return new Operate(currentToken->getValue());
+    // Store temp value
+    std::string temp = currentToken->getValue();
+
+    // Prep next token
+    loadNextToken();
+
+    return new Operate(temp);
 }
 
 Parser::~Parser() {
     delete currentToken;
+    delete program;
+}
+
+void Parser::closeScope(Parser::vardef_t *vardef) {
+
+}
+
+void Parser::openScope(Parser::vardef_t *vardef) {
+
 }

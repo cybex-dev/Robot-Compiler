@@ -13,8 +13,6 @@
 class CommandAssign: public Command, public Expression, public VarName {
 public:
     CommandAssign(VarName *varName, Expression *expression);
-
-    virtual ~CommandAssign() = 0;
 };
 
 
