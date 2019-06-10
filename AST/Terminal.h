@@ -13,6 +13,7 @@ protected:
     std::string spelling;
 public:
     explicit Terminal(std::string spelling);
+    std::string describe() ;
 };
 
 

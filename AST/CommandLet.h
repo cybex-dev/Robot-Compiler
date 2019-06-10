@@ -16,6 +16,8 @@ public:
     CommandLet(Declaration *declaration, Command *command);
 
     virtual ~CommandLet();
+
+    std::string describe() override;
 };
 
 

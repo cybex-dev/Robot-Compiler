@@ -8,7 +8,7 @@
 
 #include "Terminal.h"
 
-class Operate: Terminal {
+class Operate: public Terminal {
 public:
     explicit Operate(const std::string &spelling);
 };

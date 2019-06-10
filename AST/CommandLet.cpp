@@ -11,6 +11,10 @@
 CommandLet::CommandLet(Declaration *declaration, Command *command) : declaration(declaration),
                                                                      command(command) {}
 
+std::string CommandLet::describe() {
+    return Command::describe();
+}
+
 CommandLet::~CommandLet() {
     delete declaration;
     delete command;

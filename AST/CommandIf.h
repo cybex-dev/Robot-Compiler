@@ -9,15 +9,18 @@
 #include "Command.h"
 #include "Expression.h"
 
-class CommandIf : public Command, public Expression {
+class CommandIf : public Command, public PrimaryExpression {
 protected:
+    PrimaryExpression* primaryExpression = nullptr;
     Command *trueCommand = nullptr,
             *falseCommand = nullptr;
 
 public:
-    CommandIf(Expression *condition, Command *trueCommand, Command *falseCommand);
+    CommandIf(PrimaryExpression *condition, Command *trueCommand, Command *falseCommand);
 
     virtual ~CommandIf();
+
+    std::string describe() override;
 };
 
 

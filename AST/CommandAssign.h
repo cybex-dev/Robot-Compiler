@@ -13,6 +13,8 @@
 class CommandAssign: public Command, public Expression, public VarName {
 public:
     CommandAssign(VarName *varName, Expression *expression);
+
+    std::string describe() override;
 };
 
 

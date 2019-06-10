@@ -14,6 +14,8 @@
 class DeclarationVar: public Declaration, public VarName, public TypeDenoter {
 public:
     DeclarationVar(VarName *varName, TypeDenoter *typeDenoter);
+
+    std::string describe() override;
 };
 
 
