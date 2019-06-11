@@ -28,7 +28,7 @@ int main() {
             std::getline(std::cin, code);
 #else
             // normal - let command
-            code = "let var t: int in t := t + t";
+            code = "let var t: int in t := 1+1";
 
             // normal - if statement with let statements
 //            code = "if(true+true) then let var e: int in e:=e+1 else let var z: int in z:=z+2";
@@ -58,7 +58,7 @@ int main() {
 //            code = "let const e ~ 1+1 in e:=x+y";
 
             // shows editing of const
-            code = "let const e ~ 1+1 in e:=2+2";
+//            code = "let const e ~ 1+1 in e:=2+2";
 #endif
         }
 

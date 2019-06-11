@@ -437,7 +437,7 @@ TypeDenoter *Parser::parseTypeDenoter() {
                     Token::tokenDesc(TokenType::IdentifierToken).data(), type.data());
         }
 
-        return new TypeDenoter(type);
+        return new TypeDenoter(Scanner::toUpper(type));
     }
 
     fprintf(stderr, "FATAL: Unknown data type \'%s\' is not defined!", type.data());
