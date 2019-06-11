@@ -17,3 +17,7 @@ CommandAssign::CommandAssign(VarName *varName, Expression *expression): Expressi
 std::string CommandAssign::describe() {
     return Command::describe() + " " + Expression::describe() + " " + VarName::describe();
 }
+
+std::string CommandAssign::getType() {
+    return Expression::getType();
+}

@@ -5,6 +5,9 @@
 #ifndef COMPILER_EXPRESSION_H
 #define COMPILER_EXPRESSION_H
 
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 
 #include "AST.h"
 #include "PrimaryExpression.h"
@@ -18,6 +21,8 @@ public:
     explicit Expression(Expression *expression);
     virtual ~Expression();
     std::string describe() override;
+
+    virtual std::string getType();
 };
 
 

@@ -21,6 +21,8 @@ public:
     virtual ~CommandIf();
 
     std::string describe() override;
+
+    std::string getType() override;
 };
 
 

@@ -7,3 +7,7 @@
 std::string PrimaryExpression::describe() {
     return AST::describe();
 }
+
+PrimaryExpression::~PrimaryExpression() {
+
+}

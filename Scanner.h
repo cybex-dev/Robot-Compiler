@@ -24,7 +24,7 @@ public:
     int buildTokenList();
     int buildTokenList(std::string sentence);
     std::string buildNextToken();
-    std::string toUpper(const std::string& str);
+    static std::string toUpper(const std::string& str);
     TokenType findType(const std::string& spelling);
     std::vector<Token> getTokenList();
     virtual ~Scanner();

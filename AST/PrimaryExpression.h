@@ -9,7 +9,10 @@
 
 class PrimaryExpression: public AST {
 public:
+    virtual ~PrimaryExpression();
+
     std::string describe() override;
+    virtual std::string getType() = 0;
 };
 
 

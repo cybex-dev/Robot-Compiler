@@ -12,3 +12,7 @@ PrimaryExpression_Expression::PrimaryExpression_Expression(PrimaryExpression *p1
         : Expression(p1, p2, o) {
 
 }
+
+std::string PrimaryExpression_Expression::getType() {
+    return Expression::getType();
+}

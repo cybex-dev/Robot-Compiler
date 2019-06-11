@@ -5,6 +5,10 @@
 #include "AST/CommandAssign.h"
 #include "AST/CommandLet.h"
 
+
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
 //
 // Created by cybex on 2019/05/03.
 //
@@ -21,9 +25,9 @@ Parser::Parser(std::string sentence) {
 int Parser::compile() {
     Scanner *s = new Scanner(std::move(sentence));
     if (_VERBOSITY > 2) {
-        fprintf(stdout, "Building Token List...\n");
+        fprintf(stdout, ANSI_COLOR_CYAN "Building Token List...\n" ANSI_COLOR_RESET);
     } else if (_VERBOSITY <= 2) {
-        fprintf(stdout, "Building Token List...");
+        fprintf(stdout, ANSI_COLOR_CYAN "Building Token List..." ANSI_COLOR_RESET);
     }
     int success = s->buildTokenList();
     if (success == 1) {
@@ -39,9 +43,9 @@ int Parser::compile() {
 
     // Build AST
     if (_VERBOSITY > 2) {
-        fprintf(stdout, "Building AST...\n");
+        fprintf(stdout, ANSI_COLOR_CYAN "Building AST...\n" ANSI_COLOR_RESET);
     } else if (_VERBOSITY <= 2) {
-        fprintf(stdout, "Building AST...");
+        fprintf(stdout, ANSI_COLOR_CYAN "Building AST..." ANSI_COLOR_RESET);
     }
 
     buildAST();
@@ -193,9 +197,54 @@ Command *Parser::parseCommand() {
 }
 
 Expression *Parser::parseExpression() {
+    // parse primary expression
     PrimaryExpression *p1 = parsePrimaryExpression();
+    std::string p1Type = p1->getType();
+    if (p1Type.length() == 0) {
+        fprintf(stderr, ANSI_COLOR_RED "FATAL: Unknown type for variable: \'%s\' [Type \'%s\']\n" ANSI_COLOR_RESET, p1->describe().data(), p1Type.data());
+        exit(1);
+    }
+    // Check if variable/expression defined in vartable, then change data type appropriately
+    if (p1Type == "STRING" || p1Type == "CHAR") {
+        if(checkVarExists(p1->describe())) {
+            p1Type = var_table.find(p1->describe())->second.type->describe();
+        }
+    }
+    p1Type = Scanner::toUpper(p1Type);
+
+    // parse operator
     Operate *o1 = parseOperator();
+
+    // parse primary expression
     PrimaryExpression *p2 = parsePrimaryExpression();
+    std::string p2Type = p2->getType();
+    if (p2Type.length() == 0) {
+        fprintf(stderr, ANSI_COLOR_RED "FATAL: Unknown type for variable: \'%s\' [Type \'%s\']\n" ANSI_COLOR_RESET, p2->describe().data(), p2Type.data());
+        exit(1);
+    }
+    // Check if variable/expression defined in vartable, then change data type appropriately
+    if (p2Type == "STRING" || p2Type == "CHAR") {
+        if(checkVarExists(p2->describe())) {
+            p2Type = var_table.find(p2->describe())->second.type->describe();
+        }
+    }
+    p2Type = Scanner::toUpper(p2Type);
+
+    // Check + is used with strings or chars
+    if (p2Type == p1Type && (p1Type == "STRING" || p1Type == "CHAR") && o1->describe() != "+") {
+        fprintf(stderr, ANSI_COLOR_RED "FATAL: Invalid Operator \'%s\' for Strings \'%s\' and \'%s\'\n" ANSI_COLOR_RESET, o1->describe().data(), p1->describe().data(), p2->describe().data());
+        exit(1);
+    }
+
+    // Check incompatible types
+    if(p1Type != p2Type) {
+        fprintf(stderr, ANSI_COLOR_RED "FATAL: Incompatible types: \nP1: %s [Type \'%s\']\nP2: %s [Type \'%s\']\n" ANSI_COLOR_RESET, p1->describe().data(), p1Type.data(), p2->describe().data(), p2Type.data());
+        exit(1);
+    }
+
+    if (_VERBOSITY >= 3) {
+        fprintf(stdout, ANSI_COLOR_GREEN "\t = PrimaryExpression1 [Type \'%s\'] matches PrimaryExpression2 [Type \'%s\']\n" ANSI_COLOR_RESET, p1Type.data(), p2Type.data());
+    }
 
     // Build Expression
     return new Expression(p1, p2, o1);
@@ -248,13 +297,14 @@ Declaration *Parser::parseDeclaration() {
             VarName *id = parseVarName();
             nextToken(TokenType::DeclConstToken);
             Expression *expression = parseExpression();
+            TypeDenoter *typeDenoter = new TypeDenoter(expression->getType());
 
             // Create var_table reference
-            vardef_t *vardef = new vardef_t{
+            auto *vardef = new vardef_t{
                     .name = id,
                     .defined = false,
                     .isConst = true,
-                    .type = new TypeDenoter("const")
+                    .type = typeDenoter
             };
 
             // Add to var_table

@@ -20,3 +20,7 @@ CommandIf::~CommandIf() {
     delete falseCommand;
     delete primaryExpression;
 }
+
+std::string CommandIf::getType() {
+    return "BOOL";
+}

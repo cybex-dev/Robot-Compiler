@@ -15,6 +15,8 @@ public:
     CommandAssign(VarName *varName, Expression *expression);
 
     std::string describe() override;
+
+    std::string getType() override;
 };
 
 

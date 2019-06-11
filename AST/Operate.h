@@ -11,6 +11,8 @@
 class Operate: public Terminal {
 public:
     explicit Operate(const std::string &spelling);
+
+    std::string describe() override;
 };
 
 
