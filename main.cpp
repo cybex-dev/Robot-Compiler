@@ -27,8 +27,29 @@ int main() {
 #ifndef _TESTING
             std::getline(std::cin, code);
 #else
-            code = "let var t: int in t := t + 1";
-//            code = "if(true*true) then x:=x+1 else z:=z+2";
+            // syntax issue - missing in keyword
+//            code = "let var t: int t := t + t";
+
+            // test string <-> int incompatibility
+//            code = "let var t: int in t := t + abc";
+
+            // test int <-> int incompatibility, assignment, let command
+//            code = "let var t: int in t := t + 111";
+
+            // shows breaking of language example if statement requires Commands (i.e. assiignemnt, ifstatement or let)
+//            code = "if(true+true) then x+x else z+z";
+
+            // shows nested commands
+//            code = "if(true+true) then let var e: int in e:=e+1 else let var z: int in z:=z+2";
+
+            // shows nested let commands with duplicate variables
+//            code = "let var e: int in let var e: int in e:=e+e";
+
+            // shows incompatible data types
+//            code = "if(true+true) then x:=x+1 else z:=z+2";
+
+            // shows undeclared variable
+//            code = "if(true+true) then x:=z+z else z:=z+2";
 #endif
         }
 
