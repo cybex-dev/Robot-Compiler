@@ -24,7 +24,14 @@ std::string Expression::describe() {
 }
 
 std::string Expression::getType() {
-    return "";
+    if (!P1->getType().empty() && !P2->getType().empty() && P1->getType() == P2->getType()) {
+        return P1->getType();
+    }
+
+    fprintf(stderr,
+            ANSI_COLOR_RED "FATAL: Incompatible types: \nP1: %s [Type \'%s\']\nP2: %s [Type \'%s\']\n" ANSI_COLOR_RESET,
+            P1->describe().data(), P1->getType().data(), P2->describe().data(), P2->getType().data());
+    exit(1);
 }
 //    // Get expression types
 //    std::string p1 = P1->getType();

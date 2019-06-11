@@ -173,15 +173,35 @@ Command *Parser::parseCommand() {
             int c = var_table.count(varName->describe());
 
             if (c == 0) {
-                fprintf(stdout, ANSI_COLOR_RED "Undeclared variable: %s in:\n%s\n" ANSI_COLOR_RESET,
+                fprintf(stdout, ANSI_COLOR_RED "FATAL: Undeclared variable: %s in:\n%s\n" ANSI_COLOR_RESET,
                         varName->describe().data(), expression->describe().data());
                 exit(1);
             }
 
+            // Check is defined
             auto mapIterator = var_table.find(varName->describe());
             if (!mapIterator->second.defined) {
                 fprintf(stdout, ANSI_COLOR_RED "Undefined variable: %s in:\n%s\n" ANSI_COLOR_RESET,
                         varName->describe().data(), mapIterator->second.type->describe().data());
+                exit(1);
+            }
+
+            // Get pointer to variable
+            vardef_t *var = &mapIterator->second;
+
+            // Check data type match
+            if (var->type->describe() != expression->getType()) {
+                fprintf(stderr,
+                        ANSI_COLOR_RED "FATAL: Incompatible types: \nVariable \'%s\' [Type \'%s\']\nExpression: \'%s\' [Type \'%s\']\n" ANSI_COLOR_RESET,
+                        var->name->describe().data(), var->type->describe().data(), expression->describe().data(), expression->getType().data());
+                exit(1);
+            }
+
+            // Check if const
+            if (var->isConst) {
+                fprintf(stdout,
+                        ANSI_COLOR_RED "FATAL: \'%s\' is a constant. You cannot alter it once declared.\n" ANSI_COLOR_RESET,
+                        varName->describe().data());
                 exit(1);
             }
 
@@ -201,12 +221,13 @@ Expression *Parser::parseExpression() {
     PrimaryExpression *p1 = parsePrimaryExpression();
     std::string p1Type = p1->getType();
     if (p1Type.length() == 0) {
-        fprintf(stderr, ANSI_COLOR_RED "FATAL: Unknown type for variable: \'%s\' [Type \'%s\']\n" ANSI_COLOR_RESET, p1->describe().data(), p1Type.data());
+        fprintf(stderr, ANSI_COLOR_RED "FATAL: Unknown type for variable: \'%s\' [Type \'%s\']\n" ANSI_COLOR_RESET,
+                p1->describe().data(), p1Type.data());
         exit(1);
     }
     // Check if variable/expression defined in vartable, then change data type appropriately
     if (p1Type == "STRING" || p1Type == "CHAR") {
-        if(checkVarExists(p1->describe())) {
+        if (checkVarExists(p1->describe())) {
             p1Type = var_table.find(p1->describe())->second.type->describe();
         }
     }
@@ -219,12 +240,13 @@ Expression *Parser::parseExpression() {
     PrimaryExpression *p2 = parsePrimaryExpression();
     std::string p2Type = p2->getType();
     if (p2Type.length() == 0) {
-        fprintf(stderr, ANSI_COLOR_RED "FATAL: Unknown type for variable: \'%s\' [Type \'%s\']\n" ANSI_COLOR_RESET, p2->describe().data(), p2Type.data());
+        fprintf(stderr, ANSI_COLOR_RED "FATAL: Unknown type for variable: \'%s\' [Type \'%s\']\n" ANSI_COLOR_RESET,
+                p2->describe().data(), p2Type.data());
         exit(1);
     }
     // Check if variable/expression defined in vartable, then change data type appropriately
     if (p2Type == "STRING" || p2Type == "CHAR") {
-        if(checkVarExists(p2->describe())) {
+        if (checkVarExists(p2->describe())) {
             p2Type = var_table.find(p2->describe())->second.type->describe();
         }
     }
@@ -232,18 +254,24 @@ Expression *Parser::parseExpression() {
 
     // Check + is used with strings or chars
     if (p2Type == p1Type && (p1Type == "STRING" || p1Type == "CHAR") && o1->describe() != "+") {
-        fprintf(stderr, ANSI_COLOR_RED "FATAL: Invalid Operator \'%s\' for Strings \'%s\' and \'%s\'\n" ANSI_COLOR_RESET, o1->describe().data(), p1->describe().data(), p2->describe().data());
+        fprintf(stderr,
+                ANSI_COLOR_RED "FATAL: Invalid Operator \'%s\' for Strings \'%s\' and \'%s\'\n" ANSI_COLOR_RESET,
+                o1->describe().data(), p1->describe().data(), p2->describe().data());
         exit(1);
     }
 
     // Check incompatible types
-    if(p1Type != p2Type) {
-        fprintf(stderr, ANSI_COLOR_RED "FATAL: Incompatible types: \nP1: %s [Type \'%s\']\nP2: %s [Type \'%s\']\n" ANSI_COLOR_RESET, p1->describe().data(), p1Type.data(), p2->describe().data(), p2Type.data());
+    if (p1Type != p2Type) {
+        fprintf(stderr,
+                ANSI_COLOR_RED "FATAL: Incompatible types: \nP1: %s [Type \'%s\']\nP2: %s [Type \'%s\']\n" ANSI_COLOR_RESET,
+                p1->describe().data(), p1Type.data(), p2->describe().data(), p2Type.data());
         exit(1);
     }
 
     if (_VERBOSITY >= 3) {
-        fprintf(stdout, ANSI_COLOR_GREEN "\t = PrimaryExpression1 [Type \'%s\'] matches PrimaryExpression2 [Type \'%s\']\n" ANSI_COLOR_RESET, p1Type.data(), p2Type.data());
+        fprintf(stdout,
+                ANSI_COLOR_GREEN "\t = PrimaryExpression1 [Type \'%s\'] matches PrimaryExpression2 [Type \'%s\']\n" ANSI_COLOR_RESET,
+                p1Type.data(), p2Type.data());
     }
 
     // Build Expression
@@ -293,7 +321,6 @@ Declaration *Parser::parseDeclaration() {
              * 4. Expression
              */
             loadNextToken();
-            nextToken(TokenType::ConstToken);
             VarName *id = parseVarName();
             nextToken(TokenType::DeclConstToken);
             Expression *expression = parseExpression();
@@ -472,7 +499,7 @@ void Parser::openScope(vardef_t *vardef) {
     var_table.insert(std::pair<std::string, vardef_t>(vardef->name->describe(), *vardef));
 }
 
-void Parser::closeScope(const std::string& varName) {
+void Parser::closeScope(const std::string &varName) {
     // We check if variable exists, if not, we have a problem
     if (!checkVarExists(varName)) {
         fprintf(stdout, ANSI_COLOR_RED "\tUndefined variable [%s].\n" ANSI_COLOR_RESET,
@@ -490,7 +517,7 @@ void Parser::closeScope(const std::string& varName) {
     var_table.erase(varName);
 }
 
-bool Parser::checkVarExists(const std::string& varName) {
+bool Parser::checkVarExists(const std::string &varName) {
     return (var_table.count(varName) != 0);
 }
 

@@ -27,6 +27,12 @@ int main() {
 #ifndef _TESTING
             std::getline(std::cin, code);
 #else
+            // normal - let command
+            code = "let var t: int in t := t + t";
+
+            // normal - if statement with let statements
+//            code = "if(true+true) then let var e: int in e:=e+1 else let var z: int in z:=z+2";
+
             // syntax issue - missing in keyword
 //            code = "let var t: int t := t + t";
 
@@ -39,9 +45,6 @@ int main() {
             // shows breaking of language example if statement requires Commands (i.e. assiignemnt, ifstatement or let)
 //            code = "if(true+true) then x+x else z+z";
 
-            // shows nested commands
-//            code = "if(true+true) then let var e: int in e:=e+1 else let var z: int in z:=z+2";
-
             // shows nested let commands with duplicate variables
 //            code = "let var e: int in let var e: int in e:=e+e";
 
@@ -50,8 +53,16 @@ int main() {
 
             // shows undeclared variable
 //            code = "if(true+true) then x:=z+z else z:=z+2";
+
+            // shows incompatible data types
+//            code = "let const e ~ 1+1 in e:=x+y";
+
+            // shows editing of const
+            code = "let const e ~ 1+1 in e:=2+2";
 #endif
         }
+
+        fprintf(stdout, "Compiling:\n---------------------------------------------\n\t" ANSI_COLOR_MAGENTA " \'%s\'" ANSI_COLOR_RESET " \n---------------------------------------------\n", code.data());
 
         if (_VERBOSITY >= 1)
             fprintf(stdout, ANSI_COLOR_BLUE "Compiling, please wait...\n" ANSI_COLOR_RESET);
