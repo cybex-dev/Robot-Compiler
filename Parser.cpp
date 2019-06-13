@@ -84,7 +84,7 @@ void Parser::nextToken(TokenType type) {
     if (currentToken->matchesType(type)) {
         loadNextToken();
     } else {
-        fprintf(stdout, ANSI_COLOR_RED "FATAL: Compilation Error: Expected \'%s\' but found \'%s\' \n" ANSI_COLOR_RESET,
+        fprintf(stdout, ANSI_COLOR_RED "\nFATAL: Compilation Error: Expected \'%s\' but found \'%s\' \n" ANSI_COLOR_RESET,
                 Token::tokenDesc(type).data(), Token::tokenDesc(currentToken->getType()).data());
         exit(1);
     }
@@ -173,7 +173,7 @@ Command *Parser::parseCommand() {
             int c = var_table.count(varName->describe());
 
             if (c == 0) {
-                fprintf(stdout, ANSI_COLOR_RED "FATAL: Undeclared variable: %s in:\n%s\n" ANSI_COLOR_RESET,
+                fprintf(stdout, ANSI_COLOR_RED "\nFATAL: Undeclared variable: %s in:\n%s\n" ANSI_COLOR_RESET,
                         varName->describe().data(), expression->describe().data());
                 exit(1);
             }
@@ -192,7 +192,7 @@ Command *Parser::parseCommand() {
             // Check data type match
             if (var->type->describe() != expression->getType()) {
                 fprintf(stderr,
-                        ANSI_COLOR_RED "FATAL: Incompatible types: \nVariable \'%s\' [Type \'%s\']\nExpression: \'%s\' [Type \'%s\']\n" ANSI_COLOR_RESET,
+                        ANSI_COLOR_RED "\nFATAL: Incompatible types: \nVariable \'%s\' [Type \'%s\']\nExpression: \'%s\' [Type \'%s\']\n" ANSI_COLOR_RESET,
                         var->name->describe().data(), var->type->describe().data(), expression->describe().data(), expression->getType().data());
                 exit(1);
             }
@@ -200,7 +200,7 @@ Command *Parser::parseCommand() {
             // Check if const
             if (var->isConst) {
                 fprintf(stdout,
-                        ANSI_COLOR_RED "FATAL: \'%s\' is a constant. You cannot alter it once declared.\n" ANSI_COLOR_RESET,
+                        ANSI_COLOR_RED "\nFATAL: \'%s\' is a constant. You cannot alter it once declared.\n" ANSI_COLOR_RESET,
                         varName->describe().data());
                 exit(1);
             }
@@ -221,7 +221,7 @@ Expression *Parser::parseExpression() {
     PrimaryExpression *p1 = parsePrimaryExpression();
     std::string p1Type = p1->getType();
     if (p1Type.length() == 0) {
-        fprintf(stderr, ANSI_COLOR_RED "FATAL: Unknown type for variable: \'%s\' [Type \'%s\']\n" ANSI_COLOR_RESET,
+        fprintf(stderr, ANSI_COLOR_RED "\nFATAL: Unknown type for variable: \'%s\' [Type \'%s\']\n" ANSI_COLOR_RESET,
                 p1->describe().data(), p1Type.data());
         exit(1);
     }
@@ -240,7 +240,7 @@ Expression *Parser::parseExpression() {
     PrimaryExpression *p2 = parsePrimaryExpression();
     std::string p2Type = p2->getType();
     if (p2Type.length() == 0) {
-        fprintf(stderr, ANSI_COLOR_RED "FATAL: Unknown type for variable: \'%s\' [Type \'%s\']\n" ANSI_COLOR_RESET,
+        fprintf(stderr, ANSI_COLOR_RED "\nFATAL: Unknown type for variable: \'%s\' [Type \'%s\']\n" ANSI_COLOR_RESET,
                 p2->describe().data(), p2Type.data());
         exit(1);
     }
@@ -255,7 +255,7 @@ Expression *Parser::parseExpression() {
     // Check + is used with strings or chars
     if (p2Type == p1Type && (p1Type == "STRING" || p1Type == "CHAR") && o1->describe() != "+") {
         fprintf(stderr,
-                ANSI_COLOR_RED "FATAL: Invalid Operator \'%s\' for Strings \'%s\' and \'%s\'\n" ANSI_COLOR_RESET,
+                ANSI_COLOR_RED "\nFATAL: Invalid Operator \'%s\' for Strings \'%s\' and \'%s\'\n" ANSI_COLOR_RESET,
                 o1->describe().data(), p1->describe().data(), p2->describe().data());
         exit(1);
     }
@@ -263,7 +263,7 @@ Expression *Parser::parseExpression() {
     // Check incompatible types
     if (p1Type != p2Type) {
         fprintf(stderr,
-                ANSI_COLOR_RED "FATAL: Incompatible types: \nP1: %s [Type \'%s\']\nP2: %s [Type \'%s\']\n" ANSI_COLOR_RESET,
+                ANSI_COLOR_RED "\nFATAL: Incompatible types: \nP1: %s [Type \'%s\']\nP2: %s [Type \'%s\']\n" ANSI_COLOR_RESET,
                 p1->describe().data(), p1Type.data(), p2->describe().data(), p2Type.data());
         exit(1);
     }
@@ -440,7 +440,7 @@ TypeDenoter *Parser::parseTypeDenoter() {
         return new TypeDenoter(Scanner::toUpper(type));
     }
 
-    fprintf(stderr, "FATAL: Unknown data type \'%s\' is not defined!", type.data());
+    fprintf(stderr, "\nFATAL: Unknown data type \'%s\' is not defined!", type.data());
     exit(1);
 }
 
@@ -478,7 +478,9 @@ Operate *Parser::parseOperator() {
 
 Parser::~Parser() {
     delete currentToken;
-    delete program;
+    if (program != nullptr) {
+        delete program;
+    }
 }
 
 void Parser::openScope(vardef_t *vardef) {

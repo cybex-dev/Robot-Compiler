@@ -1,3 +1,4 @@
+#!/usr/bin/cmake -P
 cmake_minimum_required(VERSION 3.14)
 project(Compiler)
 
@@ -20,7 +21,7 @@ set(INT 1)
 set(LONG 1)
 
 # Uncomment for testing
-add_compile_definitions("_TESTING")
+#add_compile_definitions("_TESTING")
 
 # DO NOT TOUCH!
 set(CMAKE_CXX_STANDARD 20)
