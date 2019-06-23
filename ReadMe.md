@@ -1,5 +1,7 @@
 # Robot Compiler
 
+What is with the name? I have no idea. If you have a better one, please let me know :)
+
 ## What is it?
 A simple compiler that can compile an single line application using Pascal syntax.
 
